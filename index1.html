@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptocurrency Market Data</title>
+    <link rel="stylesheet" href="style.css"> 
+
+</head>
+<body>
+    <div class="container">
+        <h1>Live Cryptocurrency Candlestick Chart</h1>
+
+        <div class="select-container">
+            <select id="crypto-select">
+                <option value="ETH">ETH/USDT</option>
+                <option value="BNB">BNB/USDT</option>
+                <option value="DOT">DOT/USDT</option>
+            </select>
+
+            <select id="time-interval">
+                <option value="1m">1 Minute</option>
+                <option value="3m">3 Minutes</option>
+                <option value="5m">5 Minutes</option>
+            </select>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="chart"></canvas>
+        </div>
+
+        <footer>Powered by Binance WebSocket API</footer>
+    </div>
+    
+    <script src="app1.js"></script> 
+     <!-- Chart.js -->
+     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+     <!-- chartjs-chart-financial plugin -->
+     <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial"></script>
+      <!-- chartjs-adapter-date-fns for handling dates -->
+      <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+</body>
+</html>
