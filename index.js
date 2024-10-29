@@ -1,5 +1,5 @@
-let chart; // Chart.js instance
-let ws; // WebSocket instance
+let chart; 
+let ws; 
 const chartData = { ETH: [], BNB: [], DOT: [] }; // Store data for each coin
 
 // Function to generate WebSocket URL dynamically based on coin and interval
@@ -11,11 +11,11 @@ function getWebSocketURL(coin, interval) {
 function initChart() {
     const ctx = document.getElementById('chart').getContext('2d');
     chart = new Chart(ctx, {
-        type: 'candlestick', // candlestick type from chartjs-chart-financial
-        data: {
+        type: 'candlestick', 
+                data: {
             datasets: [{
                 label: 'Candlestick Chart',
-                data: [] // Will be updated with real-time data
+                data: [] 
             }]
         },
         options: {
@@ -29,7 +29,7 @@ function initChart() {
                     type: 'time',
                     time: {
                         unit: 'minute',
-                        tooltipFormat: 'MMM dd, hh:mm a' // Format for time on x-axis
+                        tooltipFormat: 'MMM dd, hh:mm a'
                     },
                     ticks: {
                         source: 'auto',
@@ -52,8 +52,8 @@ function initChart() {
 
 // Function to update the chart with new data
 function updateChart(coin) {
-    console.log('Updating chart with data:', chartData[coin]); // Debug log
-    chart.data.datasets[0].data = chartData[coin]; // Set chart data to the selected coin's data
+    console.log('Updating chart with data:', chartData[coin]);
+    chart.data.datasets[0].data = chartData[coin];
     chart.update();
 }
 
@@ -61,7 +61,7 @@ function updateChart(coin) {
 function openWebSocket(coin, interval) {
     const wsURL = getWebSocketURL(coin, interval);
     if (ws) {
-        ws.close(); // Close any previous WebSocket connection
+        ws.close(); 
     }
     ws = new WebSocket(wsURL);
 
@@ -70,7 +70,7 @@ function openWebSocket(coin, interval) {
     };
 
     ws.onmessage = (event) => {
-        console.log('Received message:', event.data); // Debug log
+        console.log('Received message:', event.data); 
         handleWebSocketMessage(event, coin);
     };
 
@@ -87,29 +87,25 @@ function openWebSocket(coin, interval) {
 function handleWebSocketMessage(event, coin) {
     const message = JSON.parse(event.data);
 
-    if (message.k) { // If the message contains candlestick data
+    if (message.k) { 
         const kline = message.k;
         const candlestick = {
-            x: new Date(kline.t),  // Time of the kline
-            o: parseFloat(kline.o), // Open price
-            h: parseFloat(kline.h), // High price
-            l: parseFloat(kline.l), // Low price
-            c: parseFloat(kline.c)  // Close price
-        };
+            x: new Date(kline.t), 
+            o: parseFloat(kline.o), 
+            h: parseFloat(kline.h), 
+            l: parseFloat(kline.l), 
+            c: parseFloat(kline.c)          };
 
-        console.log('New candlestick:', candlestick); // Debug log
+        console.log('New candlestick:', candlestick);
 
-        // Only push new candlesticks, avoid duplicates
         const lastCandle = chartData[coin].length ? chartData[coin][chartData[coin].length - 1] : null;
         if (!lastCandle || lastCandle.x.getTime() !== candlestick.x.getTime()) {
             chartData[coin].push(candlestick);
 
-            // Limit the number of data points on the chart for better performance
             if (chartData[coin].length > 100) {
                 chartData[coin].shift();
             }
 
-            // Update the chart with the new data
             updateChart(coin);
         }
     }
@@ -136,18 +132,18 @@ window.onload = () => {
     openWebSocket(coin, interval);
 };
 
-// 1. Save data in localStorage
+// Save data in localStorage
 function saveChartData(coin, data) {
     localStorage.setItem(coin, JSON.stringify(data));
 }
 
-// 2. Retrieve data from localStorage
+// Retrieve data from localStorage
 function getStoredChartData(coin) {
     const storedData = localStorage.getItem(coin);
     return storedData ? JSON.parse(storedData) : [];
 }
 
-// 3. Update the chart with stored data
+// Update the chart with stored data
 function updateChartWithStoredData(coin) {
     const storedData = getStoredChartData(coin);
     if (storedData.length > 0) {
@@ -156,12 +152,10 @@ function updateChartWithStoredData(coin) {
     }
 }
 
-// 4. Handle new WebSocket data
+// Handle new WebSocket data
 function handleNewWebSocketData(coin, newData) {
     let currentData = getStoredChartData(coin);
     currentData.push(newData);
-
-    // Limit the stored data to the most recent 100 candles (optional)
     if (currentData.length > 100) {
         currentData.shift();
     }
@@ -173,25 +167,21 @@ function handleNewWebSocketData(coin, newData) {
     chart.update();
 }
 
-// 5. Switch between coins and update chart
+// Switch between coins and update chart
 function switchCoin(coin) {
-    // Fetch historical data for the new coin
     updateChartWithStoredData(coin);
-
-    // Re-establish WebSocket connection for real-time updates
     connectWebSocketForCoin(coin);
 }
 
-// 6. WebSocket connection for selected coin
+// WebSocket connection for selected coin
 function connectWebSocketForCoin(coin) {
-    const wsURL = getWebSocketURL(coin, '1m'); // Adjust interval if needed
+    const wsURL = getWebSocketURL(coin, '1m'); 
     const ws = new WebSocket(wsURL);
 
     ws.onmessage = function (event) {
         const data = JSON.parse(event.data);
-        const candlestickData = transformToCandlestickFormat(data); // Transform WebSocket data
+        const candlestickData = transformToCandlestickFormat(data); 
         
-        // Handle new data for the active coin
         handleNewWebSocketData(coin, candlestickData);
     };
 }
